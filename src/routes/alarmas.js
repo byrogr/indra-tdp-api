@@ -1,9 +1,9 @@
 const { Router } = require('express')
 
-const { alarmsPost } = require('../controllers/ftth/alarms.controller')
+const { postAlarm } = require('../controllers/ftth/alarms.controller')
 
 const router = Router()
 
-router.post('/alarms', alarmsPost)
+router.post('/alarms', postAlarm)
 
 module.exports = router
