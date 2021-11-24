@@ -1,56 +1,44 @@
 const express = require('express')
 const cors = require('cors')
 
-const {
-    readCreateTicketRemedyMessages,
-    readChangeTicketRemedyMessages
-} = require('../services/treeops/tickets.consumer')
-
-const {
-    notificationController
- } = require('../controllers/treeops/socket.controller')
+const db = require('../db/connection')
 
 class Server {
-    constructor () {
-        this.app = express()
-        this.port = process.env.PORT
-        this.server = require('http').createServer( this.app )
+  constructor () {
+    this.app = express()
+    this.port = process.env.PORT
 
-        this.io = require('socket.io')( this.server, {
-            cors: {
-                origin: '*',
-            }
-        })
+    //- Database
+    this.dbConnection()
 
-        //- Middlewares
-        this.middlewares()
+    //- Middlewares
+    this.middlewares()
 
-        // this.readCreateTicketRemedyMessages()
+    //- Routes
+    this.routes()
+  }
 
-        //- Routes
-        this.routes()
-
-        //- Sockets
-        this.sockets()
+  async dbConnection () {
+    try {
+      await db.authenticate()
+      console.log('Conectado a la base de datos')
+    } catch (err) {
+      throw new Error(err)
     }
+  }
 
-    middlewares () {
-        this.app.use(cors())
-        this.app.use(express.json())
-    }
+  middlewares () {
+    this.app.use(cors())
+    this.app.use(express.json())
+  }
 
-    routes () {
-        this.app.use('/api/v1/ftth/', require('../routes/alarmas'))
-        this.app.use('/api/v1/remedy/', require('../routes/treeops'))
-    }
+  routes () {
+    this.app.use('/api/v1/ftth/', require('../routes/alarmas'))
+  }
 
-    sockets () {
-        this.io.on('connection', notificationController)
-    }
-
-    start () {
-        this.server.listen(this.port)
-    }
+  start () {
+    this.app.listen(this.port)
+  }
 }
 
 module.exports = Server
