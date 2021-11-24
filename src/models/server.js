@@ -1,37 +1,16 @@
 const express = require('express')
 const cors = require('cors')
 
-const {
-    readCreateTicketRemedyMessages,
-    readChangeTicketRemedyMessages
-} = require('../services/treeops/tickets.consumer')
-
-const {
-    notificationController
- } = require('../controllers/treeops/socket.controller')
-
 class Server {
     constructor () {
         this.app = express()
         this.port = process.env.PORT
-        this.server = require('http').createServer( this.app )
-
-        this.io = require('socket.io')( this.server, {
-            cors: {
-                origin: '*',
-            }
-        })
 
         //- Middlewares
         this.middlewares()
 
-        // this.readCreateTicketRemedyMessages()
-
         //- Routes
         this.routes()
-
-        //- Sockets
-        this.sockets()
     }
 
     middlewares () {
@@ -41,15 +20,10 @@ class Server {
 
     routes () {
         this.app.use('/api/v1/ftth/', require('../routes/alarmas'))
-        this.app.use('/api/v1/remedy/', require('../routes/treeops'))
-    }
-
-    sockets () {
-        this.io.on('connection', notificationController)
     }
 
     start () {
-        this.server.listen(this.port)
+        this.app.listen(this.port)
     }
 }
 
