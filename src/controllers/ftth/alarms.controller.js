@@ -11,7 +11,7 @@ const postAlarm = async (req, res) => {
 
     // todo: Validaciones
 
-    res.json({
+    res.status(201).json({
         code: 201,
         failed: false,
         data: {
