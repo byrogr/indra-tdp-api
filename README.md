@@ -19,3 +19,9 @@ Para iniciar el servidor escriba y ejecute
 ```bash
 nodemon app
 ```
+
+## Documentación
+Ingrese a la siguiente url
+```bash
+http://host:port/api-docs
+```
