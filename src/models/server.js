@@ -1,7 +1,9 @@
 const express = require('express')
 const cors = require('cors')
+const swaggerUi = require('swagger-ui-express')
 
 const db = require('../db/connection')
+const docs = require('../docs/index')
 
 class Server {
   constructor () {
@@ -13,6 +15,9 @@ class Server {
 
     //- Middlewares
     this.middlewares()
+
+    //- Swagger Doc
+    this.swagger()
 
     //- Routes
     this.routes()
@@ -30,6 +35,14 @@ class Server {
   middlewares () {
     this.app.use(cors())
     this.app.use(express.json())
+  }
+
+  swagger () {
+    this.app.use(
+      "/api-docs",
+      swaggerUi.serve,
+      swaggerUi.setup(docs)
+    )
   }
 
   routes () {
