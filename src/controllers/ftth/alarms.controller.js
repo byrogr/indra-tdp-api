@@ -6,16 +6,43 @@ const postAlarm = async (req, res) => {
   const data = getAlarmMapper(body)
 
   try {
-    const alarma = new Alarma(data)
-    await alarma.save()
 
-    // todo: Validaciones
+    let message = '';
+    const {count, rows} = await Alarma.findAndCountAll({ where: { alarmaId: data.alarmaId } });
+    
+    if(count > 0){
+      await Alarma.update(
+        {
+          device : data.device,
+          notificationId : data.notificationId,
+          nombre : data.nombre,
+          locacion : data.locacion,
+          source : data.source,
+          problema : data.problema,
+          razon :  data.razon,
+          severidad : data.severidad,
+          severidad_original : data.severidad_original,
+          estado : data.estado,
+          fe_inicio : data.fe_inicio,
+          fe_cese : data.fe_cese,
+          info : data.info,
+          fe_ultima : data.fe_ultima
+        },{
+          where:{ 
+            alarmaId: data.alarmaId
+          }
+        });
+        message = 'Recurso actualizado correctamente'
+    } else {
+      await Alarma.create(data);
+      message = 'Recurso creado correctamente'
+    }
 
     res.status(201).json({
         code: 201,
         failed: false,
         data: {
-            message: 'Recurso creado correctamente'
+            message: message
         }
     })
   } catch (err) {
