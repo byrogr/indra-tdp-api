@@ -7,7 +7,8 @@ const db = new Sequelize(
   {
     port: process.env.DB_PORT,
     host: process.env.DB_HOST,
-    dialect: 'mysql'
+    dialect: 'mysql',
+    timezone: 'America/Lima'
 })
 
 module.exports = db
