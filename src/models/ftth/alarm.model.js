@@ -7,7 +7,7 @@ const Alarma = db.define('Alarma', {
     type: DataTypes.STRING(100),
   },
   notificationId: {
-  type: DataTypes.BIGINT
+   type: DataTypes.BIGINT
   },
   alarmaId: {
     type: DataTypes.BIGINT

@@ -6,16 +6,23 @@ const postAlarm = async (req, res) => {
   const data = getAlarmMapper(body)
 
   try {
-    const alarma = new Alarma(data)
-    await alarma.save()
+    let message = '';
+    const where = { alarmaId: data.alarmaId }
+    const { count } = await Alarma.findAndCountAll( { where } );
 
-    // todo: Validaciones
+    if(count > 0){
+      await Alarma.update( data,  { where } );
+      message = 'Recurso actualizado correctamente'
+    } else {
+      await Alarma.create(data);
+      message = 'Recurso creado correctamente'
+    }
 
     res.status(201).json({
         code: 201,
         failed: false,
         data: {
-            message: 'Recurso creado correctamente'
+          message
         }
     })
   } catch (err) {
@@ -24,7 +31,7 @@ const postAlarm = async (req, res) => {
         code: 500,
         failed: true,
         error: {
-            message: 'Error al conectarse con el servicio'
+          message: 'Error al conectarse con el servicio'
         }
     })
   }
