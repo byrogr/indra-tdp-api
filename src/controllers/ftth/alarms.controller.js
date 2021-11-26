@@ -6,33 +6,13 @@ const postAlarm = async (req, res) => {
   const data = getAlarmMapper(body)
 
   try {
-
     let message = '';
-    const {count, rows} = await Alarma.findAndCountAll({ where: { alarmaId: data.alarmaId } });
-    
+    const where = { alarmaId: data.alarmaId }
+    const { count } = await Alarma.findAndCountAll( { where } );
+
     if(count > 0){
-      await Alarma.update(
-        {
-          device : data.device,
-          notificationId : data.notificationId,
-          nombre : data.nombre,
-          locacion : data.locacion,
-          source : data.source,
-          problema : data.problema,
-          razon :  data.razon,
-          severidad : data.severidad,
-          severidad_original : data.severidad_original,
-          estado : data.estado,
-          fe_inicio : data.fe_inicio,
-          fe_cese : data.fe_cese,
-          info : data.info,
-          fe_ultima : data.fe_ultima
-        },{
-          where:{ 
-            alarmaId: data.alarmaId
-          }
-        });
-        message = 'Recurso actualizado correctamente'
+      await Alarma.update( data,  { where } );
+      message = 'Recurso actualizado correctamente'
     } else {
       await Alarma.create(data);
       message = 'Recurso creado correctamente'
@@ -42,7 +22,7 @@ const postAlarm = async (req, res) => {
         code: 201,
         failed: false,
         data: {
-            message: message
+          message
         }
     })
   } catch (err) {
@@ -51,7 +31,7 @@ const postAlarm = async (req, res) => {
         code: 500,
         failed: true,
         error: {
-            message: 'Error al conectarse con el servicio'
+          message: 'Error al conectarse con el servicio'
         }
     })
   }
