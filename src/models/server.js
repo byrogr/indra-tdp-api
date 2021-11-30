@@ -5,10 +5,14 @@ const swaggerUi = require('swagger-ui-express')
 const db = require('../db/connection')
 const docs = require('../docs/index')
 
+const { notificationController } = require('../controllers/treeops/socket.controller')
+
 class Server {
   constructor () {
     this.app = express()
     this.port = process.env.PORT
+    this.server = require('http').createServer( this.app )
+    this.io = require('socket.io')( this.server, { cors: { origin: '*' } })
 
     //- Database
     this.dbConnection()
@@ -21,6 +25,9 @@ class Server {
 
     //- Routes
     this.routes()
+
+    //- Sockets
+    this.sockets()
   }
 
   async dbConnection () {
@@ -49,8 +56,12 @@ class Server {
     this.app.use('/api/v1/ftth/', require('../routes/alarmas'))
   }
 
+  sockets () {
+    this.io.on('connection', notificationController)
+  }
+
   start () {
-    this.app.listen(this.port)
+    this.server.listen(this.port)
   }
 }
 
