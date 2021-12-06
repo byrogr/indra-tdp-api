@@ -2,11 +2,12 @@ const { Router } = require('express')
 const { check } = require('express-validator')
 
 const { postAlarm } = require('../controllers/ftth/alarms.controller')
+const authentication = require('../middlewares/authentication')
 const validarCampos = require('../middlewares/validation')
 
 const router = Router()
 
-router.post('/alarms',[
+router.post('/alarms',authentication,[
     check('deviceDescription', 'El campo deviceDescription no debe estar vacio')
         .not().isEmpty().isString().withMessage('El campo deviceDescription debe ser de tipo String'),
     check('notificationId', 'El campo notificationId debe ser de tipo Integer')
