@@ -1,91 +1,63 @@
-const { Op } = require("sequelize/dist");
-const { ClienteTelefono, ClienteDniRuc, ClienteSrbb, Cliente } = require("../../models/multiconsulta/client.model");
+const { default: axios } = require("axios");
+const Errors = require("../../errors/errors");
 
-const getClient = async (req,res) => {
+const getClient = async (req,res,next) => {
     const { query } = req
 
     try{
-        let where = {}
+        
+        const url = process.env.URL_MULTI + '/api/pruebasQueryMulticonsulta/?typeData='+ query.typeData +'&text='+ query.text
 
-        if(query.typeData == 3 || query.typeData == 4){
-            const data = await ClienteTelefono.findAll({
-                    attributes : ['cliente'],
-                    where: {
-                        [Op.or]:[
-                            {telf1 : query.text},{telf2 : query.text},{telf3 : query.text},{telf4 : query.text},
-                            {telf5 : query.text},{telf6 : query.text},{telf7 : query.text},{telf8 : query.text},
-                            {telf9 : query.text},{telf10 : query.text},{telf11 : query.text},{telf12 : query.text}
-                        ]
-                    }
-                })
+        const respuesta = await axios.post(url);
 
-            if(query.typeData == 3){
-                where = (data[0].dataValues.cliente == null) ? { [Op.or]: [{phone1 : query.text},{phone2 : query.text},{contactPhone : query.text}]} : { clientCod : data[0].dataValues.cliente}
-            }else{
-                where = (data[0].dataValues.cliente == null) ? { telefonohfc : query.text} : { clientCod : data[0].dataValues.cliente}
-            }
-        } else if ( query.typeData == 5){
-            const data = await ClienteDniRuc.findAll({
-                    attributes : ['cliente'],
-                    where: { numerodoc : query.text }
-                })
+        let response = respuesta.data.response
+        
+        let result = {} , ips = {} , mensaje = '' , code = '', body =''
 
-            where = { clientCod : data[0].dataValues.cliente }
+        if(response.cantidad == 1){
+            let dato = response.resultado.resultadoMulti 
+            mensaje = 'Se encontro resultados de busqueda asociados a los filtros seleccionados'
 
-        } else if (query.typeData == 6){
-            const data = await ClienteDniRuc.findAll({
-                    attributes : ['cliente'],
-                    where: { numeroruc : query.text }
-                })
-
-            where = { clientCod : data[0].dataValues.cliente }
+            result = { serviceId: dato[0].idservicio, cmProductId: dato[0].idproducto, SaleId: dato[0].idventa, mtaProductId: dato[0].idproductomta,
+                        clientCod: dato[0].IDCLIENTECRM, clientName: dato[0].Nombre, phone1: dato[0].telf1, phone2: dato[0].telf2,
+                        trobaNode: dato[0].Nodo_Troba, interface: dato[0].interface, cmts: dato[0].cmts, contactPhone: dato[0].movil1,
+                        activePack: dato[0].velocidad_final, ipAddress: dato[0].IPAddress, macAddress: dato[0].MACADDRESS, Bonding: dato[0].bondingCli,
+                        snrDown: dato[0].nivelesRuido.downSnr, powerDown: dato[0].nivelesRuido.downPx, snrUp: dato[0].nivelesRuido.upSnr, 
+                        powerUp: dato[0].nivelesRuido.upPx, macState: dato[0].MACState, manufacturer: dato[0].Fabricante, model: dato[0].Modelo, 
+                        firmware: dato[0].Version_firmware, docsis: dato[0].docsis, voIp: dato[0].voip, ispCpe: dato[0].scopesgroup}
+        
+            ips = { macCpe : dato[0].macx, ipCpe : dato[0].publica, macMta : dato[0].macmta, ipMta : dato[0].ipmta}
             
-        } else if (query.typeData == 1){
-
-            where = { clientCod : query.text}
+            res.status(201).json({
+                code: code,
+                error: false,
+                message: mensaje,
+                QueryResult : result,
+                IpsCableModemAssignment : ips
+            })
 
         } else {
-
-            let mac = (((query.text).replace('.','')).replace(':','')).replace('-','')
-            where = { mac3 : mac} 
-
+            let resultado = response.resultado
+            if(resultado.length > 0){
+                mensaje = resultado[0].mensaje
+                next(new Errors({
+                    codigo : 'SVC1001',
+                    mensaje : mensaje
+                }))
+            }else{
+                mensaje = ' Resource typeData: ' + query.typeData + ' and text: ' +  query.text + ' does not exist'
+                next(new Errors({
+                    codigo : 'SVC1006',
+                    mensaje : mensaje
+                }))
+            }
         }
-
-        let datos = ''
-        let mensaje = ''
-        let queryresult = ''
-        let cablemoden = []
-        
-        datos = await ClienteSrbb.findAll({ where })
-        if( datos.length == 0){
-            datos = await Cliente.findAll({ where })
-        }
-
-        if(datos.length > 0){
-            queryresult = datos[0].dataValues
-            mensaje = 'Se encontro resultados'
-            cablemoden = null
-        }else{
-            mensaje = 'No existen resultados de busqueda asociados a los filtros seleccionados'
-            queryresult = null
-            cablemoden = null
-        }
-
-        res.status(500).json({
-            code: 201,
-            error: false,
-            message: mensaje,
-            QueryResult: queryresult ,
-            IpsCableModemAssignment: cablemoden     
-        })
-
 
     } catch (err) {
-        res.status(500).json({
-            code: 500,
-            error: true,
-            message: 'Error al conectarse con el servicio',     
-        })
+        next(new Errors({
+            codigo : 'SVR1000',
+            mensaje : ''
+        }))
     }
 }
 

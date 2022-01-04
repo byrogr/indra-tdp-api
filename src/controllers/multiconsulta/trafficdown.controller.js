@@ -1,6 +1,7 @@
+const Errors = require('../../errors/errors')
 const TraficoDown = require('../../models/multiconsulta/trafficdown.model')
 
-const getTrafficDown = async (req,res) => {
+const getTrafficDown = async (req,res,next) => {
     const { query } = req
 
     try{
@@ -15,30 +16,32 @@ const getTrafficDown = async (req,res) => {
                 data.push(datos[dato].dataValues)
             }
             down = datos[0].dataValues.down
-            mensaje = 'Hay data para graficar'          
+            mensaje = 'Hay data para graficar' 
+
+            res.status(201).json({
+                code: 201,
+                error: false,
+                message: mensaje,
+                response: {
+                    data : data,
+                    down : down
+                }
+            })
+
         }else{
-            down = null
-            data = null
-            mensaje = 'No hay data para graficar - Revisar App'
+            mensaje = ' Resource cmts: ' + query.cmts + ' and interface: ' +  query.interface + ' does not exist'
+            next(new Errors({
+                codigo : 'SVC1006',
+                mensaje : mensaje
+            }))
         }
         
-        res.status(201).json({
-            code: 201,
-            error: false,
-            message: mensaje,
-            response: {
-                data : data,
-                down : down
-            }
-        })
 
     } catch (err) {
-        res.status(500).json({
-            code: 500,
-            error: true,
-            message: 'Error al conectarse con el servicio',
-            response: null        
-        })
+        next(new Errors({
+            codigo : 'SVR1000',
+            mensaje : ''
+        }))
     }
 }
 

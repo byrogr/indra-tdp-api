@@ -1,6 +1,7 @@
+const Errors = require("../../errors/errors")
 const TrobaDown = require("../../models/multiconsulta/trobadown.model")
 
-const getTrobaDown = async (req,res) => {
+const getTrobaDown = async (req,res,next) => {
     const { query } = req
 
     try{
@@ -18,34 +19,34 @@ const getTrobaDown = async (req,res) => {
                 data.push(datos[dato].dataValues)
             }
             mensaje = 'Hay datos historicos para graficar'
+
+            color = [{"description":"CM Total","color": "blue"},
+                    {"description":"CM Offline","color": "red"},
+                    {"description":"CM Oper","color": "green"}]
+
+            res.status(201).json({
+                code: 201,
+                error: false,
+                message: mensaje,
+                response: {
+                    trobaNode : query.trobaNode,
+                    data : data,
+                    LevelColor : color
+                }        
+            })
         }else{
-            data = null
-            mensaje = 'Sin histórico para graficar. Sin caidas masivas en los últimos 15 días.'
+            mensaje = ' Resource cmtsPort: ' + query.cmtsPort + ' and trobaNode: ' +  query.trobaNode + ' does not exist'
+            next(new Errors({
+                codigo : 'SVC1006',
+                mensaje : mensaje
+            }))
         }
 
-        color = [{"description":"CM Total","color": "blue"},
-                 {"description":"CM Offline","color": "red"},
-                 {"description":"CM Oper","color": "green"}]
-
-
-        res.status(201).json({
-            code: 201,
-            error: false,
-            message: mensaje,
-            response: {
-                trobaNode : query.trobaNode,
-                data : data,
-                LevelColor : color
-            }
-        })
-
     } catch (err) {
-        res.status(500).json({
-            code: 500,
-            error: true,
-            message: 'Error al conectarse con el servicio',
-            response: null        
-        })
+        next(new Errors({
+            codigo : 'SVR1000',
+            mensaje : ''
+        }))
     }
 }
 
