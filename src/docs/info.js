@@ -1,7 +1,7 @@
 module.exports = {
   openapi: "3.0.3",
   info: {
-    title: 'Alarms FTTH API Documentation',
+    title: 'API Documentation',
     contact: {
       name: 'Roger Rojas',
       email: 'rrojas@indracompany.com'
