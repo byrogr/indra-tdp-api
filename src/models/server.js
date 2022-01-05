@@ -54,6 +54,7 @@ class Server {
 
   routes () {
     this.app.use('/api/v1/ftth/', require('../routes/alarmas'))
+    this.app.use('/api/v1/mc/', require('../routes/multiconsulta'))
   }
 
   sockets () {

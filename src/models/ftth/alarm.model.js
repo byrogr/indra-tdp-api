@@ -53,6 +53,14 @@ const Alarma = db.define('Alarma', {
     type: DataTypes.DATE,
     allowNull: true
   },
+  port_id:{
+    type: DataTypes.STRING(30),
+    allowNull: true
+  },
+  serial_number:{
+    type: DataTypes.STRING(30),
+    allowNull: true
+  }
 }, {
   tableName: 'alarmas_ftth'
 })
