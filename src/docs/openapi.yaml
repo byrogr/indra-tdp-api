@@ -50,6 +50,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/trobaLevelsBodyResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/ServerError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
   /mc/trafficDown:
     get:
       tags:
@@ -86,6 +94,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/trafficDownBodyResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/ServerError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
   /mc/trobaFallDown:
     get:
       tags:
@@ -122,6 +138,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/trobaFallDownBodyResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/ServerError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
   /mc/queryMultiple:
     get:
       tags:
@@ -158,11 +182,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/queryMultipleBodyResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/ServerError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
 
 
 
 
 components:
+  responses:
+    BadRequest:
+      description: 400 BAD REQUEST
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenericErrorBodyResponse'
+    NotFound:
+      description: 404 NOT FOUND
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenericErrorBodyResponse'
+    ServerError:
+      description: 500 INTERNAL SERVER ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenericErrorBodyResponse'
+    ServiceUnavailable:
+      description: 503 SERVICE UNAVAILABLE
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenericErrorBodyResponse'
+
   parameters:
     ServiceId:
       in: header
@@ -200,6 +258,28 @@ components:
         type: string
 
   schemas:
+    GenericErrorBodyResponse:
+      type: object
+      properties:
+        error:
+          type: boolean
+          description: Si hay un error el valor sera true, Si no hay error el valor sera false
+        code:
+          type: string
+          description: Codigo de respuesta. En caso de éxito devolvera un codigo 200, en caso de error por ejm 500, 400 u otros.
+        response:
+          type: object
+          properties:
+            exceptionId:
+              type: string
+            exceptionText:
+              type: string
+            moreInfo:
+              type: string
+            userMessage:
+              type: string
+
+
     trobaLevelsBodyResponse:
       type: object
       properties:
