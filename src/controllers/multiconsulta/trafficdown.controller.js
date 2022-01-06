@@ -9,17 +9,17 @@ const getTrafficDown = async (req,res,next) => {
         let data = []
         let down = ''
         const where = { cmts: query.cmts , interface: query.interface }
-        const datos = await TraficoDown.findAll({ attributes:['cmts','down','date_time','use','quantity'], where });     
-        
+        const datos = await TraficoDown.findAll({ attributes:['cmts','down','date_time','use','quantity'], where });
+
         if( datos.length > 0 ){
             for(const dato in datos){
                 data.push(datos[dato].dataValues)
             }
             down = datos[0].dataValues.down
-            mensaje = 'Hay data para graficar' 
+            mensaje = 'Hay data para graficar'
 
-            res.status(201).json({
-                code: 201,
+            res.status(200).json({
+                code: 200,
                 error: false,
                 message: mensaje,
                 response: {
@@ -35,7 +35,7 @@ const getTrafficDown = async (req,res,next) => {
                 mensaje : mensaje
             }))
         }
-        
+
 
     } catch (err) {
         next(new Errors({

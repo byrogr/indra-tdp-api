@@ -17,7 +17,7 @@ const getClient = async (req,res,next) => {
 
         let response = respuesta.data.response
 
-        let result = {} , ips = {} , mensaje = '' , code = '', body =''
+        let result = {} , ips = {} , mensaje = '' , code = 200, body =''
 
         if(response.cantidad == 1){
             let dato = response.resultado.resultadoMulti
@@ -33,7 +33,7 @@ const getClient = async (req,res,next) => {
 
             ips = { macCpe : dato[0].macx, ipCpe : dato[0].publica, macMta : dato[0].macmta, ipMta : dato[0].ipmta}
 
-            res.status(201).json({
+            res.status(code).json({
                 code: code,
                 error: false,
                 message: mensaje,
