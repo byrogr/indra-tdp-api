@@ -1,6 +1,10 @@
-# Multiconsulta Web Service
+# Multiconsulta Managment Web Service
 
 Servicio web de la plataforma Multiconsulta.
+
+## Requisitos
+- NodeJS >= v12
+- Express >= v4
 
 ## Instalación
 Para instalar escriba y ejecute

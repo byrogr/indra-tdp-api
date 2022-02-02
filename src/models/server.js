@@ -1,9 +1,11 @@
+const path = require('path')
 const express = require('express')
 const cors = require('cors')
 const swaggerUi = require('swagger-ui-express')
+const YAML = require('yamljs')
 
 const db = require('../db/connection')
-const docs = require('../docs/index')
+const docs = YAML.load(path.join(__dirname, '../docs/openapi.yaml'))
 
 const { notificationController } = require('../controllers/treeops/socket.controller')
 
@@ -54,6 +56,7 @@ class Server {
 
   routes () {
     this.app.use('/api/v1/ftth/', require('../routes/alarmas'))
+    this.app.use('/api/v1/mc/', require('../routes/multiconsulta'))
   }
 
   sockets () {

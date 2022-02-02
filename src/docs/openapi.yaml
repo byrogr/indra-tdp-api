@@ -1,0 +1,506 @@
+openapi: 3.0.1
+info:
+  title: API REST Multiconsulta Managment
+  description: Esta API REST se encarga de manejar la información de la plataforma Multiconsulta.
+  version: 1.1.0
+servers:
+  - url: http://127.0.0.1:3000/api/v1
+    description: "Local server"
+  - url: http://10.252.193.37:3000/api/v1
+    description: "Maqueta server"
+tags:
+  - name: FTTH Alarms
+    description: Endpoint para registrar alarmas recibidas desde UNM.
+  - name: MC
+    description: Endpoint para obtener datos de asociados de la plataforma Multiconsulta.
+paths:
+  /mc/trobaLevels:
+    get:
+      tags:
+        - MC
+      summary: Consulta los datos asociados a los niveles de troba de multiconsulta.
+      parameters:
+      - $ref: '#/components/parameters/ServiceId'
+      - $ref: '#/components/parameters/Application'
+      - $ref: '#/components/parameters/PID'
+      - $ref: '#/components/parameters/User'
+      - in: query
+        name: cmtsPort
+        description: Puerto CMTS
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: trobaNode
+        description: Nodo Troba
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+          headers:
+            UNICA-ServiceId:
+              schema:
+                type: string
+            UNICA-PID:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/trobaLevelsBodyResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/ServerError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+  /mc/trafficDown:
+    get:
+      tags:
+        - MC
+      summary: Consulta los datos asociados a trafico down de multiconsulta
+      parameters:
+      - $ref: '#/components/parameters/ServiceId'
+      - $ref: '#/components/parameters/Application'
+      - $ref: '#/components/parameters/PID'
+      - $ref: '#/components/parameters/User'
+      - in: query
+        name: cmts
+        description: CMTS
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: interface
+        description: Interface
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+          headers:
+            UNICA-ServiceId:
+              schema:
+                type: string
+            UNICA-PID:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/trafficDownBodyResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/ServerError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+  /mc/trobaFallDown:
+    get:
+      tags:
+        - MC
+      summary: Consulta los datos asociados a los niveles de troba de multiconsulta.
+      parameters:
+      - $ref: '#/components/parameters/ServiceId'
+      - $ref: '#/components/parameters/Application'
+      - $ref: '#/components/parameters/PID'
+      - $ref: '#/components/parameters/User'
+      - in: query
+        name: cmtsPort
+        description: Puerto CMTS
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: trobaNode
+        description: Nodo Troba
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+          headers:
+            UNICA-ServiceId:
+              schema:
+                type: string
+            UNICA-PID:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/trobaFallDownBodyResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/ServerError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+  /mc/queryMultiple:
+    get:
+      tags:
+        - MC
+      summary: Consulta los datos preliminares necesarios para consultas de Multiconsulta
+      parameters:
+      - $ref: '#/components/parameters/ServiceId'
+      - $ref: '#/components/parameters/Application'
+      - $ref: '#/components/parameters/PID'
+      - $ref: '#/components/parameters/User'
+      - in: query
+        name: typeData
+        description: Tipo de dato para la consulta
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: text
+        description: Texto que corresponde al typeData
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: OK
+          headers:
+            UNICA-ServiceId:
+              schema:
+                type: string
+            UNICA-PID:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/queryMultipleBodyResponse'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/ServerError'
+        503:
+          $ref: '#/components/responses/ServiceUnavailable'
+
+
+
+
+components:
+  responses:
+    BadRequest:
+      description: 400 BAD REQUEST
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenericErrorBodyResponse'
+    NotFound:
+      description: 404 NOT FOUND
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenericErrorBodyResponse'
+    ServerError:
+      description: 500 INTERNAL SERVER ERROR
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenericErrorBodyResponse'
+    ServiceUnavailable:
+      description: 503 SERVICE UNAVAILABLE
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GenericErrorBodyResponse'
+
+  parameters:
+    ServiceId:
+      in: header
+      name: UNICA-ServiceId
+      description: Representa un id unico de transacción en formato UUID.
+      required: true
+      schema:
+        type: string
+    Application:
+      in: header
+      name: UNICA-Application
+      description: Identificación del sistema que origina la petición.
+      required: true
+      schema:
+        type: string
+    PID:
+      in: header
+      name: UNICA-PID
+      required: true
+      schema:
+        type: string
+    User:
+      in: header
+      name: UNICA-User
+      required: true
+      schema:
+        type: string
+
+  headers:
+    UNICA-ServiceId:
+      schema:
+        type: string
+    UNICA-PID:
+      schema:
+        type: string
+
+  schemas:
+    GenericErrorBodyResponse:
+      type: object
+      properties:
+        error:
+          type: boolean
+          description: Si hay un error el valor sera true, Si no hay error el valor sera false
+        code:
+          type: string
+          description: Codigo de respuesta. En caso de éxito devolvera un codigo 200, en caso de error por ejm 500, 400 u otros.
+        response:
+          type: object
+          properties:
+            exceptionId:
+              type: string
+            exceptionText:
+              type: string
+            moreInfo:
+              type: string
+            userMessage:
+              type: string
+
+
+    trobaLevelsBodyResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Codigo de respuesta. En caso de éxito devolvera un codigo 200, en caso de error por ejm 500, 400 u otros.
+        error:
+          type: boolean
+          description: Si hay un error el valor sera true, Si no hay error el valor sera false
+        message:
+          type: string
+          description: En caso de que haya un error se mostrara un mensaje
+        response:
+          type: object
+          properties:
+            trobaNode:
+              type: string
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  cmts:
+                    type: string
+                  interface:
+                    type: string
+                  description:
+                    type: string
+                  powerup_max:
+                    type: string
+                  powerup_prom:
+                    type: string
+                  powerup_min:
+                    type: string
+                  powerds_max:
+                    type: string
+                  powerds_prom:
+                    type: string
+                  powerds_min:
+                    type: string
+                  snr_avg:
+                    type: string
+                  snr_down:
+                    type: string
+                  fecha_hora:
+                    type: string
+            levelColor:
+              type: array
+              maxItems: 4
+              items:
+                $ref: '#/components/schemas/levelColor'
+
+    trafficDownBodyResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Codigo de respuesta. En caso de éxito devolvera un codigo 200, en caso de error por ejm 500, 400 u otros.
+        error:
+          type: boolean
+          description: Si hay un error el valor sera true, Si no hay error el valor sera false
+        message:
+          type: string
+          description: En caso de que haya un error se mostrara un mensaje
+        response:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  cmts:
+                    type: string
+                  down:
+                    type: string
+                  date_time:
+                    type: string
+                  use:
+                    type: string
+                  quantity:
+                    type: string
+
+            down:
+              type: string
+
+    trobaFallDownBodyResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Codigo de respuesta. En caso de éxito devolvera un codigo 200, en caso de error por ejm 500, 400 u otros.
+        error:
+          type: boolean
+          description: Si hay un error el valor sera true, Si no hay error el valor sera false
+        message:
+          type: string
+          description: En caso de que haya un error se mostrara un mensaje
+        response:
+          type: object
+          properties:
+            trobaNode:
+              type: string
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  cmts:
+                    type: string
+                  interface:
+                    type: string
+                  description:
+                    type: string
+                  cm_tot:
+                    type: string
+                  cm_offline:
+                    type: string
+                  oper:
+                    type: string
+                  cmporc:
+                    type: string
+                  date_time:
+                    type: string
+                  date_time_f:
+                    type: string
+                  timeDuration:
+                    type: string
+                  validity:
+                    type: string
+            levelColor:
+              type: array
+              maxItems: 3
+              items:
+                $ref: '#/components/schemas/levelColor'
+
+    queryMultipleBodyResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Codigo de respuesta. En caso de éxito devolvera un codigo 200, en caso de error por ejm 500, 400 u otros.
+        error:
+          type: boolean
+          description: Si hay un error el valor sera true, Si no hay error el valor sera false
+        message:
+          type: string
+          description: En caso de que haya un error se mostrara un mensaje
+        QueryResult:
+          type: object
+          properties:
+            serviceId:
+              type: string
+            cmProductId:
+              type: string
+            SaleId:
+              type: string
+            mtaProductId:
+              type: string
+            clientCod:
+              type: string
+            clientName:
+              type: string
+            phone1:
+              type: string
+            phone2:
+              type: string
+            trobaNode:
+              type: string
+            interface:
+              type: string
+            cmts:
+              type: string
+            contactPhone:
+              type: string
+            activePack:
+              type: string
+            ipAddress:
+              type: string
+            mac Address:
+              type: string
+            Bonding:
+              type: string
+            snrDown:
+              type: string
+            powerDown:
+              type: string
+            snrUp:
+              type: string
+            powerUp:
+              type: string
+            macState:
+              type: string
+            manufacturer:
+              type: string
+            model:
+              type: string
+            firmware:
+              type: string
+            docsis:
+              type: string
+            voIp:
+              type: string
+            ispCpe:
+              type: string
+        IpsCableModemAssignment:
+          type: object
+          properties:
+            macCpe:
+              type: string
+            ipCpe:
+              type: string
+            macMta:
+              type: string
+            ipMta:
+              type: string
+
+    levelColor:
+      type: object
+      properties:
+        description:
+          type: string
+        color:
+          type: string
